@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coronavirus detection system</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename = 'bootstrap.min.css') }}">
+    <style>
+        body {
+            background-color: #f9f9f9;
+            user-select: none;
+        }
+        .container {
+            max-width: 500px;
+            margin-top: 75px;
+        }
+        .custom-control-label:hover {
+                cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <a class="navbar-brand" href="#">Coronavirus Detection System</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarColor01">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" href="#" data-toggle="modal" data-target="#aboutModal">About</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    <div class="container mb-5">
+        <div class="alert alert-dismissible alert-danger d-none" id="alertBox"></div>
+        <div class="alert alert-dismissible alert-warning">
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+            <h4 class="alert-heading">Warning!</h4>
+            <p class="mb-0">
+                Results are built on top of statistics obtained by several random hospitals.
+                We do not guarantee the accuracy of your results.
+            </p>
+        </div>
+        <div class="form-group">
+            <input type="number" class="form-control form-control-sm" id="ageInp" placeholder="Your Age">
+        </div>
+        <div class="form-group">
+            <h6>What kind of work you do</h6>
+            <div class="custom-control custom-radio">
+                <input type="radio" id="workRad" name="customRadio" class="custom-control-input" checked="">
+                <label class="custom-control-label" for="workRad">Usual work, studying, etc...</label>
+            </div>
+            <div class="custom-control custom-radio">
+                <input type="radio" id="workoutRad" name="customRadio" class="custom-control-input">
+                <label class="custom-control-label" for="workoutRad">Workout</label>
+            </div>
+            <div class="custom-control custom-radio">
+                <input type="radio" id="noWorkRad" name="customRadio" class="custom-control-input">
+                <label class="custom-control-label" for="noWorkRad">I dont <small class="text-muted">(choosen by default if you leave it empty)</small></label>
+            </div>
+        </div>
+        <div class="form-group">
+            <h6>Do you have a fever?</h6>
+            <button type="button"
+                    class="btn btn-md float-right btn-secondary"
+                    data-toggle="tooltip"
+                    data-placement="left"
+                    data-original-title="an abnormally high body temperature, usually accompanied by shivering, headache, and in severe instances, delirium.">
+                    ?
+            </button>
+            <div class="custom-control custom-switch">
+                <input type="checkbox" class="custom-control-input" id="feverInp" symptom="fever">
+                <label class="custom-control-label" for="feverInp">No</label>
+            </div>
+        </div>
+        <div class="form-group">
+            <h6>Do you usually feel fatigued?</h6>
+            <button type="button"
+                    class="btn btn-md float-right btn-secondary"
+                    data-toggle="tooltip"
+                    data-placement="left"
+                    data-original-title="extreme tiredness resulting from mental or physical exertion or illness.">
+                    ?
+            </button>
+            <div class="custom-control custom-switch">
+                <input type="checkbox" class="custom-control-input" id="fatigueInp" symptom="fatigue">
+                <label class="custom-control-label" for="fatigueInp">No</label>
+            </div>
+        </div>
+        <div class="form-group">
+            <h6>Have you been coughing lately?</h6>
+            <button type="button"
+                    class="btn btn-md float-right btn-secondary"
+                    data-toggle="tooltip"
+                    data-placement="left"
+                    data-original-title="expel air from the lungs with a sudden sharp sound.">
+                    ?
+            </button>
+            <div class="custom-control custom-switch">
+                <input type="checkbox" class="custom-control-input" id="coughInp" symptom="cough">
+                <label class="custom-control-label" for="coughInp">No</label>
+            </div>
+        </div>
+        <div class="form-group">
+            <h6>Do you have any difficulty in breathing?</h6>
+            <button type="button"
+                    class="btn btn-md float-right btn-secondary"
+                    data-toggle="tooltip"
+                    data-placement="left"
+                    data-original-title="when you're short of breath, it's hard or uncomfortable for you to take in the oxygen your body needs.">
+                    ?
+            </button>
+            <div class="custom-control custom-switch">
+                <input type="checkbox" class="custom-control-input" id="diffBreathInp" symptom="diff-breath">
+                <label class="custom-control-label" for="diffBreathInp">No</label>
+            </div>
+        </div>
+        <div class="form-group">
+            <h6>Have you been coughing up material?</h6>
+            <button type="button"
+                    class="btn btn-md float-right btn-secondary"
+                    data-toggle="tooltip"
+                    data-placement="left"
+                    title=""
+                    data-original-title="like coughing up blood.">
+                    ?
+            </button>
+            <div class="custom-control custom-switch">
+                <input type="checkbox" class="custom-control-input" id="materialCoughInp" symptom="material-cough">
+                <label class="custom-control-label" for="materialCoughInp">No</label>
+            </div>
+        </div>
+        <button class="btn btn-primary mt-3" id="diagnoseMeBtn">Diagnose me</button>
+        <div>
+            <span class="badge badge-primary d-none float-right" id="resultLabel"></span>
+        </div>
+    </div>
+    <div class="modal fade" id="aboutModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <p>
+                        This project was done in order for people to check for a possibility of them having the Coronavirus depending on certain symptoms they had.
+                        We collected data from multiple websites to find the symptoms of the virus that were collected from certain hospitals, along with their percantages.
+                        We've also fetched all the recorded cases of that virus to compute the virus' possibility.
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="{{ url_for('static', filename = 'script.js') }}"></script>
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+    <script>
+        $(function() {
+            $('[data-toggle="tooltip"]').tooltip()
+        })
+    </script>
+</body>
+</html>
